@@ -33,7 +33,7 @@ public class AlumnoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Registrar un nuevo alumno")
+    @Operation(summary = "Registrar a un nuevo alumno")
     @PostMapping
     public Alumno create(@RequestBody Alumno alumno) {
         return alumnoService.save(alumno);

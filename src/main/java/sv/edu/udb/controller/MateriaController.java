@@ -23,7 +23,7 @@ public class MateriaController {
         return materiaService.findAll();
     }
 
-    @Operation(summary = "Registrar una nueva materia")
+    @Operation(summary = "Registrar una nueva matería")
     @PostMapping
     public Materia create(@RequestBody Materia materia) {
         return materiaService.save(materia);

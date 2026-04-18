@@ -30,7 +30,7 @@ public class ProfesorController {
         return profesorService.save(profesor);
     }
 
-    @Operation(summary = "Eliminar un profesor")
+    @Operation(summary = "Eliminar a un profesor")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         profesorService.deleteById(id);
