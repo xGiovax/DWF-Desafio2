@@ -1,9 +1,11 @@
-package sv.edu.udb.service;
+package sv.edu.udb.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sv.edu.udb.domain.Profesor;
 import sv.edu.udb.repository.ProfesorRepository;
+import sv.edu.udb.service.ProfesorService;
+
 import java.util.List;
 import java.util.Optional;
 
