@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema Escolar</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --border: #2a2d3a;
+    --accent: #6c8ef5;
+    --accent2: #a78bfa;
+    --success: #34d399;
+    --danger: #f87171;
+    --warning: #fbbf24;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --radius: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ---- AUTH SCREEN ---- */
+  #auth-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 60% 20%, #1e2a4a 0%, var(--bg) 60%);
+  }
+
+  .auth-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .auth-card h1 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .auth-card p { color: var(--muted); font-size: 0.9rem; margin-bottom: 28px; }
+
+  .tabs { display: flex; gap: 4px; margin-bottom: 24px; background: var(--bg); border-radius: 8px; padding: 4px; }
+  .tab-btn {
+    flex: 1; padding: 8px; border: none; background: transparent;
+    color: var(--muted); border-radius: 6px; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem; transition: all 0.2s;
+  }
+  .tab-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 6px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+  .form-group input {
+    width: 100%; padding: 10px 14px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text);
+    font-family: 'DM Mono', monospace; font-size: 0.9rem;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-group input:focus { border-color: var(--accent); }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 18px; border: none; border-radius: var(--radius);
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; font-weight: 500; transition: all 0.2s;
+  }
+  .btn-primary { background: var(--accent); color: #fff; width: 100%; justify-content: center; }
+  .btn-primary:hover { background: #5a7df0; transform: translateY(-1px); }
+  .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+  .btn-success { background: #1a3a2a; color: var(--success); border: 1px solid #2a5a3a; }
+  .btn-danger { background: #3a1a1a; color: var(--danger); border: 1px solid #5a2a2a; }
+  .btn-warning { background: #3a2a0a; color: var(--warning); border: 1px solid #5a4a0a; }
+
+  #auth-msg { margin-top: 12px; font-size: 0.85rem; text-align: center; min-height: 20px; }
+  .msg-error { color: var(--danger); }
+  .msg-ok { color: var(--success); }
+
+  /* ---- MAIN APP ---- */
+  #app-screen { display: none; }
+
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 28px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+  }
+
+  .topbar-title {
+    font-size: 1rem; font-weight: 600;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .topbar-user { display: flex; align-items: center; gap: 10px; }
+  .user-badge {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 20px; padding: 4px 12px;
+    font-size: 0.8rem; font-family: 'DM Mono', monospace;
+    color: var(--accent);
+  }
+  .btn-logout { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+  .layout { display: flex; min-height: calc(100vh - 57px); }
+
+  .sidebar {
+    width: 220px; min-width: 220px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 12px;
+  }
+
+  .nav-section { margin-bottom: 24px; }
+  .nav-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); padding: 0 8px; margin-bottom: 8px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 10px; border-radius: 8px;
+    cursor: pointer; font-size: 0.9rem;
+    color: var(--muted); transition: all 0.15s;
+    border: 1px solid transparent;
+  }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active { background: rgba(108,142,245,0.1); color: var(--accent); border-color: rgba(108,142,245,0.2); }
+  .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+  .content { flex: 1; padding: 28px; overflow-y: auto; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .section-title { font-size: 1.3rem; font-weight: 600; }
+
+  .btn-new { background: rgba(108,142,245,0.15); color: var(--accent); border: 1px solid rgba(108,142,245,0.3); }
+  .btn-new:hover { background: rgba(108,142,245,0.25); }
+
+  /* TABLE */
+  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: var(--bg); }
+  th { padding: 12px 16px; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 500; }
+  td { padding: 12px 16px; font-size: 0.9rem; border-top: 1px solid var(--border); }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .actions { display: flex; gap: 6px; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+    z-index: 200; align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px; width: 100%; max-width: 460px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  }
+  .modal h2 { font-size: 1.1rem; margin-bottom: 20px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+  .btn-cancel { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+
+  .empty { padding: 40px; text-align: center; color: var(--muted); font-size: 0.9rem; }
+
+  select {
+    width: 100%; padding: 10px 14px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+    outline: none; cursor: pointer;
+  }
+  select:focus { border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <h1>Sistema Escolar</h1>
+    <p>Accede a tu cuenta para continuar</p>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('login')">Iniciar Sesión</button>
+      <button class="tab-btn" onclick="switchTab('register')">Registrarse</button>
+    </div>
+
+    <div id="tab-login">
+      <div class="form-group">
+        <label>Usuario</label>
+        <input type="text" id="login-user" placeholder="usuario">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="login-pass" placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary" onclick="login()">Ingresar</button>
+    </div>
+
+    <div id="tab-register" style="display:none">
+      <div class="form-group">
+        <label>Usuario</label>
+        <input type="text" id="reg-user" placeholder="nuevo_usuario">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="reg-pass" placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary" onclick="register()">Crear cuenta</button>
+    </div>
+
+    <div id="auth-msg"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+  <div class="topbar">
+    <span class="topbar-title">📚 Sistema Escolar</span>
+    <div class="topbar-user">
+      <span class="user-badge" id="user-badge">usuario</span>
+      <button class="btn btn-sm btn-logout" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <nav class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Entidades</div>
+        <div class="nav-item active" onclick="showSection('alumnos')">
+          <span class="nav-icon">🎓</span> Alumnos
+        </div>
+        <div class="nav-item" onclick="showSection('profesores')">
+          <span class="nav-icon">👨‍🏫</span> Profesores
+        </div>
+        <div class="nav-item" onclick="showSection('materias')">
+          <span class="nav-icon">📖</span> Materias
+        </div>
+        <div class="nav-item" onclick="showSection('notas')">
+          <span class="nav-icon">📝</span> Notas
+        </div>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ALUMNOS -->
+      <div id="sec-alumnos" class="section active">
+        <div class="section-header">
+          <h2 class="section-title">Alumnos</h2>
+          <button class="btn btn-new" onclick="openModal('alumno')">+ Nuevo alumno</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Nombre</th><th>Apellido</th><th>Email</th><th>Acciones</th></tr></thead>
+            <tbody id="tb-alumnos"><tr><td colspan="5" class="empty">Cargando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PROFESORES -->
+      <div id="sec-profesores" class="section">
+        <div class="section-header">
+          <h2 class="section-title">Profesores</h2>
+          <button class="btn btn-new" onclick="openModal('profesor')">+ Nuevo profesor</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Nombre</th><th>Apellido</th><th>Especialidad</th><th>Acciones</th></tr></thead>
+            <tbody id="tb-profesores"><tr><td colspan="5" class="empty">Cargando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- MATERIAS -->
+      <div id="sec-materias" class="section">
+        <div class="section-header">
+          <h2 class="section-title">Materias</h2>
+          <button class="btn btn-new" onclick="openModal('materia')">+ Nueva materia</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Nombre</th><th>Descripción</th><th>Acciones</th></tr></thead>
+            <tbody id="tb-materias"><tr><td colspan="4" class="empty">Cargando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- NOTAS -->
+      <div id="sec-notas" class="section">
+        <div class="section-header">
+          <h2 class="section-title">Notas</h2>
+          <button class="btn btn-new" onclick="openModal('nota')">+ Nueva nota</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Alumno</th><th>Materia</th><th>Valor</th><th>Acciones</th></tr></thead>
+            <tbody id="tb-notas"><tr><td colspan="5" class="empty">Cargando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h2 id="modal-title">Nuevo registro</h2>
+    <div id="modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" style="width:auto" onclick="saveModal()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:8080';
+let token = localStorage.getItem('token') || '';
+let currentUser = localStorage.getItem('username') || '';
+let editingId = null;
+let editingType = null;
+let alumnos = [], profesores = [], materias = [];
+
+// ---- AUTH ----
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (tab==='login'?i===0:i===1)));
+  document.getElementById('tab-login').style.display = tab==='login' ? '' : 'none';
+  document.getElementById('tab-register').style.display = tab==='register' ? '' : 'none';
+}
+
+async function login() {
+  const username = document.getElementById('login-user').value.trim();
+  const password = document.getElementById('login-pass').value;
+  if (!username || !password) return showMsg('Completa todos los campos', 'error');
+  try {
+    const r = await fetch(`${API}/auth/login`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({username, password})
+    });
+    const d = await r.json();
+    if (!r.ok) return showMsg(d.message || 'Credenciales inválidas', 'error');
+    token = d.token;
+    currentUser = username;
+    localStorage.setItem('token', token);
+    localStorage.setItem('username', username);
+    enterApp();
+  } catch(e) { showMsg('Error de conexión con el servidor', 'error'); }
+}
+
+async function register() {
+  const username = document.getElementById('reg-user').value.trim();
+  const password = document.getElementById('reg-pass').value;
+  if (!username || !password) return showMsg('Completa todos los campos', 'error');
+  try {
+    const r = await fetch(`${API}/auth/register`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({username, password})
+    });
+    if (!r.ok) return showMsg('Error al registrar usuario', 'error');
+    showMsg('¡Cuenta creada! Ahora inicia sesión.', 'ok');
+    switchTab('login');
+  } catch(e) { showMsg('Error de conexión con el servidor', 'error'); }
+}
+
+function showMsg(msg, type) {
+  const el = document.getElementById('auth-msg');
+  el.textContent = msg;
+  el.className = type === 'error' ? 'msg-error' : 'msg-ok';
+}
+
+function logout() {
+  token = ''; currentUser = '';
+  localStorage.removeItem('token');
+  localStorage.removeItem('username');
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'flex';
+}
+
+function enterApp() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+  document.getElementById('user-badge').textContent = currentUser;
+  loadAll();
+}
+
+// ---- FETCH HELPERS ----
+async function apiFetch(url, method='GET', body=null) {
+  const opts = {
+    method,
+    headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${token}`}
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(API + url, opts);
+  if (r.status === 204) return null;
+  return r.json();
+}
+
+// ---- LOAD ----
+async function loadAll() {
+  await Promise.all([loadAlumnos(), loadProfesores(), loadMaterias(), loadNotas()]);
+}
+
+async function loadAlumnos() {
+  try {
+    alumnos = await apiFetch('/api/alumnos');
+    const tb = document.getElementById('tb-alumnos');
+    if (!alumnos?.length) { tb.innerHTML = '<tr><td colspan="5" class="empty">Sin registros</td></tr>'; return; }
+    tb.innerHTML = alumnos.map(a => `
+      <tr>
+        <td><code style="color:var(--muted);font-size:0.8rem">${a.id}</code></td>
+        <td>${a.nombre}</td><td>${a.apellido}</td><td>${a.email || '—'}</td>
+        <td><div class="actions">
+          <button class="btn btn-sm btn-warning" onclick="editItem('alumno',${a.id})">Editar</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteItem('alumno',${a.id})">Eliminar</button>
+        </div></td>
+      </tr>`).join('');
+  } catch(e) { document.getElementById('tb-alumnos').innerHTML = '<tr><td colspan="5" class="empty">Error al cargar</td></tr>'; }
+}
+
+async function loadProfesores() {
+  try {
+    profesores = await apiFetch('/api/profesores');
+    const tb = document.getElementById('tb-profesores');
+    if (!profesores?.length) { tb.innerHTML = '<tr><td colspan="5" class="empty">Sin registros</td></tr>'; return; }
+    tb.innerHTML = profesores.map(p => `
+      <tr>
+        <td><code style="color:var(--muted);font-size:0.8rem">${p.id}</code></td>
+        <td>${p.nombre}</td><td>${p.apellido}</td><td>${p.especialidad || '—'}</td>
+        <td><div class="actions">
+          <button class="btn btn-sm btn-warning" onclick="editItem('profesor',${p.id})">Editar</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteItem('profesor',${p.id})">Eliminar</button>
+        </div></td>
+      </tr>`).join('');
+  } catch(e) { document.getElementById('tb-profesores').innerHTML = '<tr><td colspan="5" class="empty">Error al cargar</td></tr>'; }
+}
+
+async function loadMaterias() {
+  try {
+    materias = await apiFetch('/api/materias');
+    const tb = document.getElementById('tb-materias');
+    if (!materias?.length) { tb.innerHTML = '<tr><td colspan="4" class="empty">Sin registros</td></tr>'; return; }
+    tb.innerHTML = materias.map(m => `
+      <tr>
+        <td><code style="color:var(--muted);font-size:0.8rem">${m.id}</code></td>
+        <td>${m.nombre}</td><td>${m.descripcion || '—'}</td>
+        <td><div class="actions">
+          <button class="btn btn-sm btn-warning" onclick="editItem('materia',${m.id})">Editar</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteItem('materia',${m.id})">Eliminar</button>
+        </div></td>
+      </tr>`).join('');
+  } catch(e) { document.getElementById('tb-materias').innerHTML = '<tr><td colspan="4" class="empty">Error al cargar</td></tr>'; }
+}
+
+async function loadNotas() {
+  try {
+    const notas = await apiFetch('/api/notas');
+    const tb = document.getElementById('tb-notas');
+    if (!notas?.length) { tb.innerHTML = '<tr><td colspan="5" class="empty">Sin registros</td></tr>'; return; }
+    tb.innerHTML = notas.map(n => `
+      <tr>
+        <td><code style="color:var(--muted);font-size:0.8rem">${n.id}</code></td>
+        <td>${n.alumno?.nombre || '—'} ${n.alumno?.apellido || ''}</td>
+        <td>${n.materia?.nombre || '—'}</td>
+        <td><strong style="color:${n.valor>=6?'var(--success)':'var(--danger)'}">${n.valor}</strong></td>
+        <td><div class="actions">
+          <button class="btn btn-sm btn-warning" onclick="editItem('nota',${n.id})">Editar</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteItem('nota',${n.id})">Eliminar</button>
+        </div></td>
+      </tr>`).join('');
+  } catch(e) { document.getElementById('tb-notas').innerHTML = '<tr><td colspan="5" class="empty">Error al cargar</td></tr>'; }
+}
+
+// ---- NAVIGATION ----
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ---- MODAL ----
+function openModal(type, data=null) {
+  editingType = type;
+  editingId = data?.id || null;
+  document.getElementById('modal-title').textContent = (data ? 'Editar' : 'Nuevo') + ' ' + type;
+  const body = document.getElementById('modal-body');
+
+  if (type === 'alumno') {
+    body.innerHTML = `
+      <div class="form-group"><label>Nombre</label><input id="f-nombre" value="${data?.nombre||''}"></div>
+      <div class="form-group"><label>Apellido</label><input id="f-apellido" value="${data?.apellido||''}"></div>
+      <div class="form-group"><label>Email</label><input id="f-email" value="${data?.email||''}"></div>`;
+  } else if (type === 'profesor') {
+    body.innerHTML = `
+      <div class="form-group"><label>Nombre</label><input id="f-nombre" value="${data?.nombre||''}"></div>
+      <div class="form-group"><label>Apellido</label><input id="f-apellido" value="${data?.apellido||''}"></div>
+      <div class="form-group"><label>Especialidad</label><input id="f-especialidad" value="${data?.especialidad||''}"></div>`;
+  } else if (type === 'materia') {
+    body.innerHTML = `
+      <div class="form-group"><label>Nombre</label><input id="f-nombre" value="${data?.nombre||''}"></div>
+      <div class="form-group"><label>Descripción</label><input id="f-descripcion" value="${data?.descripcion||''}"></div>`;
+  } else if (type === 'nota') {
+    const optA = alumnos.map(a => `<option value="${a.id}" ${data?.alumno?.id===a.id?'selected':''}>${a.nombre} ${a.apellido}</option>`).join('');
+    const optM = materias.map(m => `<option value="${m.id}" ${data?.materia?.id===m.id?'selected':''}>${m.nombre}</option>`).join('');
+    body.innerHTML = `
+      <div class="form-group"><label>Alumno</label><select id="f-alumno">${optA}</select></div>
+      <div class="form-group"><label>Materia</label><select id="f-materia">${optM}</select></div>
+      <div class="form-group"><label>Valor (0-10)</label><input id="f-valor" type="number" min="0" max="10" step="0.1" value="${data?.valor||''}"></div>`;
+  }
+
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  editingId = null; editingType = null;
+}
+
+async function saveModal() {
+  const type = editingType;
+  let payload = {};
+
+  if (type === 'alumno') {
+    payload = { nombre: document.getElementById('f-nombre').value, apellido: document.getElementById('f-apellido').value, email: document.getElementById('f-email').value };
+  } else if (type === 'profesor') {
+    payload = { nombre: document.getElementById('f-nombre').value, apellido: document.getElementById('f-apellido').value, especialidad: document.getElementById('f-especialidad').value };
+  } else if (type === 'materia') {
+    payload = { nombre: document.getElementById('f-nombre').value, descripcion: document.getElementById('f-descripcion').value };
+  } else if (type === 'nota') {
+    payload = {
+      alumno: { id: parseInt(document.getElementById('f-alumno').value) },
+      materia: { id: parseInt(document.getElementById('f-materia').value) },
+      valor: parseFloat(document.getElementById('f-valor').value)
+    };
+  }
+
+  const urlMap = { alumno: '/api/alumnos', profesor: '/api/profesores', materia: '/api/materias', nota: '/api/notas' };
+  const url = urlMap[type] + (editingId ? '/'+editingId : '');
+  const method = editingId ? 'PUT' : 'POST';
+
+  try {
+    await apiFetch(url, method, payload);
+    closeModal();
+    loadAll();
+  } catch(e) { alert('Error al guardar'); }
+}
+
+async function editItem(type, id) {
+  const urlMap = { alumno: '/api/alumnos', profesor: '/api/profesores', materia: '/api/materias', nota: '/api/notas' };
+  const data = await apiFetch(urlMap[type]+'/'+id);
+  openModal(type, data);
+}
+
+async function deleteItem(type, id) {
+  if (!confirm('¿Eliminar este registro?')) return;
+  const urlMap = { alumno: '/api/alumnos', profesor: '/api/profesores', materia: '/api/materias', nota: '/api/notas' };
+  await apiFetch(urlMap[type]+'/'+id, 'DELETE');
+  loadAll();
+}
+
+// ---- INIT ----
+if (token) {
+  enterApp();
+} else {
+  document.getElementById('auth-screen').style.display = 'flex';
+}
+</script>
+</body>
+</html>
