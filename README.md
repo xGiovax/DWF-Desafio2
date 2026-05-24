@@ -1,14 +1,10 @@
-# Enlace al video
-
-video: https://drive.google.com/drive/folders/15nF4-5I_dK_vb78CGNBbKgJ15deoxJDy?usp=sharing
-
 ------------------------------------------------------------------------
 
 # Sistema Escolar -- Desafío Spring Boot
+# Giovanni Alberto Ruano Martínez RM250065
 
 Este proyecto es una evolución del sistema de gestión escolar, 
-transformándolo de una aplicación de consola/persistencia básica 
-a un **Servicio Web RESTful** , utilizando **Spring Boot**, **MySQL** y documentación automática con **Swagger/OpenAPI**.
+consumido por un frontend
 
 ------------------------------------------------------------------------
 
@@ -22,6 +18,7 @@ a un **Servicio Web RESTful** , utilizando **Spring Boot**, **MySQL** y document
 * **Lombok**: Para la reducción de código repetitivo (Boilerplate).
 * **Springdoc OpenAPI (Swagger)**: Para la generación de documentación interactiva de la API.
 * **Maven**: Gestor de dependencias y construcción del proyecto.
+* * **JS**: Para el front
 
 
 ##  Estructura del Proyecto
